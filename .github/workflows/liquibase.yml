@@ -19,14 +19,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate liquibase.properties
+      - name: Decode and save liquibase.properties
         run: |
-          echo "url=${{ secrets.DB_URL }}" > liquibase.properties
-          echo "username=${{ secrets.DB_USERNAME }}" >> liquibase.properties
-          echo "password=${{ secrets.DB_PASSWORD }}" >> liquibase.properties
-          echo "driver=org.postgresql.Driver" >> liquibase.properties
-          echo "changeLogFile=src/main/resources/db/changelog/db.changelog-master.xml" >> liquibase.properties
+          echo "${{ secrets.LIQUIBASE_PROPERTIES }}" | base64 --decode > liquibase.properties
 
       - name: Run Liquibase update
         run: |
-          ./gradlew status
+          ./gradlew update
