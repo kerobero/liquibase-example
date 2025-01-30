@@ -52,3 +52,29 @@ REFERENCES teachers(id);
 
 -- rollback ALTER TABLE sessions DROP CONSTRAINT fk_student;
 -- rollback ALTER TABLE sessions DROP CONSTRAINT fk_teacher;
+
+
+-- changeset changelog:users_table
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    age INT,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    document VARCHAR(20) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- rollback DROP TABLE users;
+
+-- changeset changelog:loan_table
+CREATE TABLE loan (
+    id UUID PRIMARY KEY,
+    amount DECIMAL(15, 2) NOT NULL,
+    approved BOOLEAN DEFAULT FALSE,
+    user_id UUID NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_loan_user FOREIGN KEY (user_id) REFERENCES users(id)
+);
+-- rollback DROP TABLE loan;
