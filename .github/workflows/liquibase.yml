@@ -25,8 +25,7 @@ jobs:
         id: generate-properties
         run: |
           echo "${{ secrets.LIQUIBASE_PROPERTIES }}" > liquibase.properties
-          LIQUIBASE_PROPERTIES_BASE64=$(cat liquibase.properties | base64 -w 0)
-          echo "liquibase-properties=$LIQUIBASE_PROPERTIES_BASE64" >> $GITHUB_OUTPUT
+          echo "liquibase-properties=$(cat liquibase.properties | base64)" >> $GITHUB_OUTPUT
 
   validate:
     runs-on: ubuntu-latest
@@ -81,4 +80,13 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-         
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Restore liquibase.properties
+        run: |
+          echo "${{ needs.setup.outputs.liquibase-properties }}" | base64 --decode > liquibase.properties
+
+      - name: Run Liquibase update
+        run: |
+          ./gradlew update
