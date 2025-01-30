@@ -25,7 +25,7 @@ jobs:
           echo "username=${{ secrets.DB_USERNAME }}" >> liquibase.properties
           echo "password=${{ secrets.DB_PASSWORD }}" >> liquibase.properties
           echo "driver=org.postgresql.Driver" >> liquibase.properties
-          echo "changeLogFile=src/main/resources/db/changelog/db.changelog-master.xml" >> liquibase.properties
+          echo "changeLogFile=changelog-ci.json" >> liquibase.properties
 
       - name: Run Liquibase update
         run: |
