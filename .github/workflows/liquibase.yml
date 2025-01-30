@@ -4,13 +4,11 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
-  setup:
+  liquibase-migration:
     runs-on: ubuntu-latest
-    outputs:
-      liquibase-properties: ${{ steps.generate-properties.outputs.liquibase-properties }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -21,71 +19,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate liquibase.properties
-        id: generate-properties
+      - name: Decode and save liquibase.properties
         run: |
-          echo "${{ secrets.LIQUIBASE_PROPERTIES }}" > liquibase.properties
-          echo "liquibase-properties=$(cat liquibase.properties | base64)" >> $GITHUB_OUTPUT
-
-  validate:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Restore liquibase.properties
-        run: |
-          echo "${{ needs.setup.outputs.liquibase-properties }}" | base64 --decode > liquibase.properties
-
-      - name: Run Liquibase validate
-        run: |
-          ./gradlew validate
-
-  status:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Restore liquibase.properties
-        run: |
-          echo "${{ needs.setup.outputs.liquibase-properties }}" | base64 --decode > liquibase.properties
-
-      - name: Run Liquibase status
-        run: |
-          ./gradlew status
-
-  update:
-    runs-on: ubuntu-latest
-    needs: [validate, status]
-    if: ${{ github.event_name == 'workflow_dispatch' }} # Run only on manual trigger
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Restore liquibase.properties
-        run: |
-          echo "${{ needs.setup.outputs.liquibase-properties }}" | base64 --decode > liquibase.properties
+          echo "${{ secrets.LIQUIBASE_PROPERTIES }}" | base64 --decode > liquibase.properties
 
       - name: Run Liquibase update
         run: |
