@@ -1,0 +1,32 @@
+name: Liquibase Database Migration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  liquibase-migration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generate liquibase.properties
+        run: |
+          echo "url=${{ secrets.DB_URL }}" > liquibase.properties
+          echo "username=${{ secrets.DB_USERNAME }}" >> liquibase.properties
+          echo "password=${{ secrets.DB_PASSWORD }}" >> liquibase.properties
+          echo "driver=org.postgresql.Driver" >> liquibase.properties
+          echo "changeLogFile=src/main/resources/db/changelog/db.changelog-master.xml" >> liquibase.properties
+
+      - name: Run Liquibase update
+        run: |
+          ./gradlew status
