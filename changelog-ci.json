@@ -1,9 +1,6 @@
 {
     "databaseChangeLog": [
       {
-        "include": { "file": "changelog-init.sql" }
-      },
-      {
         "includeAll": { "path": "/DDL/" }
       }
     ]
