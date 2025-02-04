@@ -20,10 +20,14 @@ CREATE TABLE loan (
     approved BOOLEAN DEFAULT FALSE,
     user_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_loan_user FOREIGN KEY (user_id) REFERENCES users(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- rollback DROP TABLE loan;
+
+-- changeset changelog:add_foreign_key_constraint
+ALTER TABLE loan
+ADD CONSTRAINT fk_loan_user FOREIGN KEY (user_id) REFERENCES users(id);
+-- rollback ALTER TABLE loan DROP CONSTRAINT fk_loan_user;
 
 -- changeset changelog:add_records_to_users
 
@@ -47,7 +51,3 @@ VALUES
     ('660e8400-e29b-41d4-a716-446655440005', 750.00, FALSE, '550e8400-e29b-41d4-a716-446655440005', NOW(), NOW());
 --rollback DELETE FROM loan WHERE user_id IN ('550e8400-e29b-41d4-a716-446655440001','550e8400-e29b-41d4-a716-446655440002','550e8400-e29b-41d4-a716-446655440003','550e8400-e29b-41d4-a716-446655440004','550e8400-e29b-41d4-a716-446655440005');
 
--- changeset changelog:add_foreign_key_constraint
-ALTER TABLE loan
-ADD CONSTRAINT fk_loan_user FOREIGN KEY (user_id) REFERENCES users(id);
--- rollback ALTER TABLE loan DROP CONSTRAINT fk_loan_user;
